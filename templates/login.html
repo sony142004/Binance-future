@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binance Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #12161c;
+            --card-bg: #181a20;
+            --text-primary: #eaecef;
+            --text-secondary: #848e9c;
+            --border-color: #2b3139;
+            --primary-yellow: #fcd535;
+            --primary-hover: #fcd535e6;
+            --input-bg: transparent;
+            --btn-bg: transparent;
+            --btn-border: #2b3139;
+            --btn-hover: #2b3139;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 440px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .login-card {
+            width: 100%;
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .qr-icon {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            width: 38px;
+            height: 38px;
+            background-color: #1e2329;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.2s;
+        }
+
+        .qr-icon:hover {
+            background-color: #2b3139;
+        }
+
+        .qr-icon i {
+            font-size: 20px;
+            color: var(--text-secondary);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .logo img {
+            height: 30px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .input-wrapper {
+            position: relative;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: border-color 0.2s;
+        }
+
+        .input-wrapper:hover {
+            border-color: #474d57;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--primary-yellow);
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 16px;
+            outline: none;
+        }
+
+        .input-wrapper input::placeholder {
+            color: #5e6673;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary-yellow);
+            color: #181a20;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            margin-bottom: 32px;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 32px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            position: relative;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .divider span {
+            padding: 0 16px;
+            background-color: var(--card-bg);
+        }
+
+        .social-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .btn-social {
+            width: 100%;
+            padding: 14px 16px;
+            background-color: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .btn-social:hover {
+            background-color: var(--btn-hover);
+        }
+
+        .btn-social img {
+            width: 20px;
+            height: 20px;
+            margin-right: 16px;
+        }
+
+        .btn-social i {
+            font-size: 20px;
+            margin-right: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .fa-google {
+            color: #ea4335;
+        }
+
+        .fa-telegram {
+            color: #2aabee;
+        }
+
+        .footer-links {
+            margin-top: 32px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .footer-links a {
+            color: var(--primary-yellow);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .footer-links a:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-wrapper">
+    <div class="login-card">
+        <div class="logo">
+            <!-- Binance Logo SVG -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20" height="24">
+                <g fill="#FCD535">
+                    <path d="M16.142 8.5L12 4.358 7.858 8.5 4.358 5 12 .716l7.642 7.642-3.5 3.5zm-8.284 4.142L12 16.784l4.142-4.142L19.642 16 12 23.642 4.358 16l3.5-3.358zm13.142-4.142L25 5l3.5 3.5-3.5 3.5-4-3.5zm-18.284 0L-1.284 5l-3.5 3.5 3.5 3.5 4-3.5zM12 7.5L8.5 11 12 14.5 15.5 11 12 7.5z"/>
+                </g>
+                <text x="32" y="18" fill="#FCD535" font-family="Arial" font-weight="bold" font-size="18" letter-spacing="1.5">BINANCE</text>
+            </svg>
+        </div>
+
+        <div class="qr-icon" title="Log in with QR code">
+            <i class="fa-solid fa-qrcode"></i>
+        </div>
+
+        <h1>Log in</h1>
+
+        <div class="input-group">
+            <label>Email/Phone number</label>
+            <div class="input-wrapper">
+                <input type="text" placeholder="Email/Phone (without country code)">
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="window.location.href='/dashboard'">Continue</button>
+
+        <div class="divider">
+            <span>or</span>
+        </div>
+
+        <div class="social-btns">
+            <button class="btn-social">
+                <svg width="20" height="20" viewBox="0 0 24 24" style="margin-right: 16px;"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Continue with Google
+            </button>
+            <button class="btn-social">
+                <i class="fa-brands fa-apple" style="color: #eaecef;"></i>
+                Continue with Apple
+            </button>
+        </div>
+    </div>
+
+    <div class="footer-links">
+        <a href="#">Create a Binance Account</a>
+        <a href="#">Need help?</a>
+    </div>
+</div>
+
+</body>
+</html>

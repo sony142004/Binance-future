@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binance Futures Testnet Trading Bot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #f0b90b; /* Binance Yellow */
+            --bg: #0b0e11;
+            --sidebar-bg: #181a20;
+            --card-bg: #1e2329;
+            --text-primary: #eaecef;
+            --text-secondary: #848e9c;
+            --success: #02c076;
+            --danger: #f84960;
+            --border: #2b3139;
+            --hover-bg: #2b3139;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-primary);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 380px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background-color: #2b3139;
+            border-radius: 8px;
+            padding: 8px 12px;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-container i {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .search-container input {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 14px;
+            width: 100%;
+            outline: none;
+        }
+
+        .search-container input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .watchlist-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .watchlist-item {
+            background-color: #1e2329;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .watchlist-item:hover {
+            background-color: #2b3139;
+            transform: translateY(-2px);
+        }
+
+        .watchlist-item.active {
+            border-color: var(--primary);
+            background-color: rgba(240, 185, 11, 0.05);
+        }
+
+        .coin-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #2b3139;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .coin-info {
+            flex: 1;
+        }
+
+        .coin-symbol {
+            font-size: 16px;
+            font-weight: 700;
+            display: block;
+        }
+
+        .coin-name {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .coin-price-info {
+            text-align: right;
+        }
+
+        .coin-price {
+            font-size: 16px;
+            font-weight: 600;
+            display: block;
+        }
+
+        .coin-change {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+
+        .up { color: var(--success); }
+        .down { color: var(--danger); }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #0b0e11 0%, #1e2329 100%);
+        }
+
+        .trade-card {
+            width: 100%;
+            max-width: 460px;
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
+        }
+
+        .trade-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .trade-header h2 {
+            font-size: 24px;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .trade-header p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .side-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .side-btn {
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .side-btn.buy.active {
+            background-color: var(--success);
+            border-color: var(--success);
+            color: white;
+            box-shadow: 0 0 15px rgba(2, 192, 118, 0.3);
+        }
+
+        .side-btn.sell.active {
+            background-color: var(--danger);
+            border-color: var(--danger);
+            color: white;
+            box-shadow: 0 0 15px rgba(248, 73, 96, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .input-wrapper {
+            background-color: #2b3139;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--primary);
+        }
+
+        .input-wrapper input, .input-wrapper select {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 16px;
+            width: 100%;
+            outline: none;
+        }
+
+        .input-wrapper select option {
+            background-color: #1e2329;
+            color: var(--text-primary);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            background-color: var(--primary);
+            color: #181a20;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 16px;
+        }
+
+        .btn-submit:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1);
+        }
+
+        #response {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .res-success { background: rgba(2, 192, 118, 0.1); border: 1px solid var(--success); color: var(--success); }
+        .res-error { background: rgba(248, 73, 96, 0.1); border: 1px solid var(--danger); color: var(--danger); }
+
+        .loader {
+            display: none;
+            text-align: center;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .fa-bitcoin { color: #f7931a; }
+        .fa-ethereum { color: #627eea; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar / Watchlist -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="search-container">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" placeholder="Search and add stocks">
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 12px; color: var(--text-secondary);">Watchlist (5/250)</span>
+                <i class="fa-solid fa-sliders" style="color: var(--text-secondary); cursor: pointer;"></i>
+            </div>
+        </div>
+
+        <div class="watchlist-container" id="watchlist">
+            <!-- Dynamically populated by JS -->
+        </div>
+    </div>
+
+    <!-- Main Content: Graph -->
+    <div class="main-content" style="padding: 0; display: block;">
+        <div id="tv-widget-container" style="height: 100%; width: 100%;">
+            <div class="tradingview-widget-container" style="height: 100%; width: 100%;">
+              <div id="tradingview_chart" style="height: 100%; width: 100%;"></div>
+              <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+              <script type="text/javascript">
+              new TradingView.widget({
+                "autosize": true,
+                "symbol": "BINANCE:BTCUSDT.P",
+                "interval": "D",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "hide_side_toolbar": false,
+                "allow_symbol_change": true,
+                "container_id": "tradingview_chart"
+              });
+              </script>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Sidebar: Order Entry -->
+    <div class="sidebar" style="width: 380px; border-left: 1px solid var(--border); border-right: none;">
+        <div class="sidebar-header" style="text-align: center;">
+            <h2 id="trade-title" style="color: var(--primary); font-size: 20px;">BTCUSDT</h2>
+            <p id="trade-subtitle" style="font-size: 12px; color: var(--text-secondary);">Binance Futures</p>
+        </div>
+
+        <div style="padding: 24px;">
+            <div class="form-group">
+                <label>Order Type</label>
+                <div class="input-wrapper">
+                    <select id="type" onchange="togglePrice()">
+                        <option value="MARKET">MARKET</option>
+                        <option value="LIMIT">LIMIT</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" id="price-group" style="display: none;">
+                <label>Price</label>
+                <div class="input-wrapper">
+                    <input type="number" id="price" placeholder="0.00">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Quantity</label>
+                <div class="input-wrapper">
+                    <input type="number" id="quantity" step="0.001" placeholder="0.001">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 32px;">
+                <button class="btn-submit" onclick="placeOrder('BUY')" style="background-color: var(--success); color: white; margin-bottom: 0;">BUY</button>
+                <button class="btn-submit" onclick="placeOrder('SELL')" style="background-color: var(--danger); color: white; margin-bottom: 0;">SELL</button>
+            </div>
+
+            <div class="loader" id="loader" style="margin-top: 16px;">Processing...</div>
+            <div id="response"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSymbol = 'BTCUSDT';
+        let tvWidget = null;
+
+        const coins = [
+            { id: 'BTCUSDT', symbol: 'BTC', name: 'Bitcoin', basePrice: 6729663, icon: '<i class="fa-brands fa-bitcoin"></i>' },
+            { id: 'ETHUSDT', symbol: 'ETH', name: 'Ethereum', basePrice: 197034, icon: '<i class="fa-brands fa-ethereum"></i>' },
+            { id: 'BNBUSDT', symbol: 'BNB', name: 'Binance Coin', basePrice: 61832, icon: '<img src="https://cryptologos.cc/logos/binance-coin-bnb-logo.png" width="20" style="filter: brightness(0) invert(1);">' },
+            { id: 'XRPUSDT', symbol: 'XRP', name: 'Ripple', basePrice: 132, icon: '<img src="https://cryptologos.cc/logos/xrp-xrp-logo.png" width="20" style="filter: brightness(0) invert(1);">' },
+            { id: 'SOLUSDT', symbol: 'SOL', name: 'Solana', basePrice: 8318, icon: '<img src="https://cryptologos.cc/logos/solana-sol-logo.png" width="20" style="filter: brightness(0) invert(1);">' }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderWatchlist();
+            initTVWidget('BINANCE:BTCUSDT.P');
+        });
+
+        function renderWatchlist() {
+            const container = document.getElementById('watchlist');
+            container.innerHTML = '';
+
+            coins.forEach(coin => {
+                const randomChange = (Math.random() * 10 - 5).toFixed(2); // Random % between -5 and +5
+                const priceVar = 1 + (Math.random() * 0.02 - 0.01); // Random price var +/- 1%
+                const displayPrice = (coin.basePrice * priceVar).toLocaleString('en-IN', { maximumFractionDigits: 0 });
+                const isUp = randomChange >= 0;
+
+                const item = document.createElement('div');
+                item.className = `watchlist-item ${coin.id === currentSymbol ? 'active' : ''}`;
+                item.onclick = (e) => selectCoin(coin.id, coin.name, coin.symbol, item);
+                
+                item.innerHTML = `
+                    <div class="coin-icon">${coin.icon}</div>
+                    <div class="coin-info">
+                        <span class="coin-symbol">${coin.symbol}</span>
+                        <span class="coin-name">${coin.name}</span>
+                    </div>
+                    <div class="coin-price-info">
+                        <span class="coin-price">₹${displayPrice}</span>
+                        <span class="coin-change ${isUp ? 'up' : 'down'}">
+                            <i class="fa-solid ${isUp ? 'fa-caret-up' : 'fa-caret-down'}"></i> 
+                            ${Math.abs(randomChange)}%
+                        </span>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function initTVWidget(symbol) {
+            tvWidget = new TradingView.widget({
+                "autosize": true,
+                "symbol": symbol,
+                "interval": "D",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "hide_side_toolbar": false,
+                "allow_symbol_change": true,
+                "container_id": "tradingview_chart"
+            });
+        }
+
+        function togglePrice() {
+            const type = document.getElementById('type').value;
+            document.getElementById('price-group').style.display = type === 'LIMIT' ? 'block' : 'none';
+        }
+
+        function selectCoin(symbol, name, shortName, element) {
+            currentSymbol = symbol;
+            
+            // UI Sidebar Update
+            document.querySelectorAll('.watchlist-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+
+            // UI Main Content Update
+            document.getElementById('trade-title').innerText = symbol;
+            document.getElementById('trade-subtitle').innerText = `${name} Futures`;
+            
+            // Update Graph
+            initTVWidget(`BINANCE:${symbol}.P`);
+
+            // Clear previous response
+            document.getElementById('response').style.display = 'none';
+        }
+
+        async function placeOrder(side) {
+            const type = document.getElementById('type').value;
+            const quantity = document.getElementById('quantity').value;
+            const price = document.getElementById('price').value;
+            const resDiv = document.getElementById('response');
+            const loader = document.getElementById('loader');
+
+            resDiv.style.display = 'none';
+            loader.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        symbol: currentSymbol, 
+                        side: side, 
+                        type, 
+                        quantity, 
+                        price: type === 'LIMIT' ? price : null
+                    })
+                });
+
+                const data = await response.json();
+                loader.style.display = 'none';
+                resDiv.style.display = 'block';
+                
+                if (data.success) {
+                    resDiv.className = 'res-success';
+                    resDiv.innerHTML = `
+                        <strong>Success!</strong><br>
+                        ID: ${data.orderId}<br>
+                        Status: ${data.status}
+                    `;
+                } else {
+                    resDiv.className = 'res-error';
+                    resDiv.innerHTML = `<strong>Failed:</strong> ${data.error}`;
+                }
+            } catch (err) {
+                loader.style.display = 'none';
+                resDiv.style.display = 'block';
+                resDiv.className = 'res-error';
+                resDiv.innerHTML = `<strong>Error:</strong> ${err.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
