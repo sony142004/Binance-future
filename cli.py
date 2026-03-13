@@ -49,40 +49,48 @@ def main():
         console.print(f"[red]Input Validation Error: {e}[/red]")
         sys.exit(1)
 
-    # Output order request summary
-    summary_text = (
-        f"Symbol: [bold cyan]{symbol}[/bold cyan]\n"
-        f"Side: [bold cyan]{side}[/bold cyan]\n"
-        f"Type: [bold cyan]{order_type}[/bold cyan]\n"
-        f"Quantity: [bold cyan]{quantity}[/bold cyan]"
+    # 4. Print clear output:
+    # - order request summary
+    summary_msg = (
+        f"[yellow]Symbol:[/yellow]    {symbol}\n"
+        f"[yellow]Side:[/yellow]      {side}\n"
+        f"[yellow]Type:[/yellow]      {order_type}\n"
+        f"[yellow]Quantity:[/yellow]  {quantity}"
     )
-    if order_type == "LIMIT":
-        summary_text += f"\nPrice: [bold cyan]{price}[/bold cyan]"
+    if price:
+        summary_msg += f"\n[yellow]Price:[/yellow]     {price}"
         
-    console.print(Panel(summary_text, title="[yellow]Order Request Summary[/yellow]"))
+    console.print(Panel(summary_msg, title="[bold white]1. Order Request Summary[/bold white]", border_style="cyan"))
 
     # Initialize client and manager
     client = BinanceFuturesClient(api_key, api_secret)
     order_manager = OrderManager(client)
 
     # Place Order
-    console.print("Sending request to Binance Futures Testnet...")
+    console.print("\n[bold]Sending request to Binance Futures Testnet...[/bold]")
     try:
         response = order_manager.place_order(symbol, side, order_type, quantity, price)
         
-        success_msg = (
-            f"[bold green]Order Placed Successfully![/bold green]\n\n"
-            f"Order ID: [cyan]{response.get('orderId')}[/cyan]\n"
-            f"Status: [cyan]{response.get('status')}[/cyan]\n"
-            f"Executed Qty: [cyan]{response.get('executedQty')}[/cyan]\n"
+        # - success/failure message
+        console.print("\n[bold green]✅ SUCCESS: Order has been placed successfully![/bold green]")
+
+        # - order response details (orderId, status, executedQty, avgPrice if available)
+        avg_price = response.get('avgPrice', '0.00')
+        if not avg_price or float(avg_price) == 0:
+            avg_price = "Market"
+
+        response_msg = (
+            f"[green]Order ID:[/green]     {response.get('orderId')}\n"
+            f"[green]Status:[/green]       {response.get('status')}\n"
+            f"[green]Executed Qty:[/green] {response.get('executedQty')}\n"
+            f"[green]Avg Price:[/green]    {avg_price}"
         )
-        if response.get('avgPrice') and float(response.get('avgPrice')) > 0:
-            success_msg += f"Avg Price: [cyan]{response.get('avgPrice')}[/cyan]\n"
             
-        console.print(Panel(success_msg, title="[green]Order Response[/green]"))
+        console.print(Panel(response_msg, title="[bold white]2. Order Response Details[/bold white]", border_style="green"))
         
     except Exception as e:
-        console.print(Panel(f"[red]{e}[/red]", title="[red]Order Failed[/red]"))
+        console.print("\n[bold red]❌ FAILURE: Order placement failed![/bold red]")
+        console.print(Panel(f"[red]{str(e)}[/red]", title="[bold white]Error Details[/bold white]", border_style="red"))
         sys.exit(1)
 
 if __name__ == "__main__":

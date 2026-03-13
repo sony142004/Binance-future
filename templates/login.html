@@ -55,34 +55,12 @@
             position: relative;
         }
 
-        .qr-icon {
-            position: absolute;
-            top: 40px;
-            right: 40px;
-            width: 38px;
-            height: 38px;
-            background-color: #1e2329;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            border: 1px solid var(--border-color);
-            transition: background-color 0.2s;
-        }
 
-        .qr-icon:hover {
-            background-color: #2b3139;
-        }
-
-        .qr-icon i {
-            font-size: 20px;
-            color: var(--text-secondary);
-        }
 
         .logo {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 12px;
             margin-bottom: 32px;
         }
@@ -95,6 +73,7 @@
             font-size: 32px;
             font-weight: 600;
             margin-bottom: 32px;
+            text-align: center;
         }
 
         .input-group {
@@ -196,6 +175,7 @@
             cursor: pointer;
             display: flex;
             align-items: center;
+            justify-content: center;
             transition: all 0.2s;
         }
 
@@ -251,19 +231,14 @@
 <div class="login-wrapper">
     <div class="login-card">
         <div class="logo">
-            <!-- Binance Logo SVG -->
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20" height="24">
+            <!-- Fixed Binance Logo SVG -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 30" height="30">
                 <g fill="#FCD535">
-                    <path d="M16.142 8.5L12 4.358 7.858 8.5 4.358 5 12 .716l7.642 7.642-3.5 3.5zm-8.284 4.142L12 16.784l4.142-4.142L19.642 16 12 23.642 4.358 16l3.5-3.358zm13.142-4.142L25 5l3.5 3.5-3.5 3.5-4-3.5zm-18.284 0L-1.284 5l-3.5 3.5 3.5 3.5 4-3.5zM12 7.5L8.5 11 12 14.5 15.5 11 12 7.5z"/>
+                    <path d="M11.5 6.7L8.5 3.7 5.5 6.7 3 4.2 8.5 0 14 5.5l-2.5 1.2zm-5.5 3L8.5 12.7l3-3 2.5 2.5-5.5 5.5-5.5-5.5 2.5-2.5zM15 6.7l2.5-2.5 2.5 2.5-2.5 2.5-2.5-2.5zM2 6.7l2.5-2.5 2.5 2.5-2.5 2.5-2.5-2.5zM8.5 6l2.5 2.5-2.5 2.5-2.5-2.5 2.5-2.5z"/>
                 </g>
-                <text x="32" y="18" fill="#FCD535" font-family="Arial" font-weight="bold" font-size="18" letter-spacing="1.5">BINANCE</text>
+                <text x="32" y="18" fill="#FCD535" font-family="Inter, Arial" font-weight="800" font-size="20">BINANCE</text>
             </svg>
         </div>
-
-        <div class="qr-icon" title="Log in with QR code">
-            <i class="fa-solid fa-qrcode"></i>
-        </div>
-
         <h1>Log in</h1>
 
         <div class="input-group">
@@ -293,7 +268,6 @@
 
     <div class="footer-links">
         <a href="#">Create a Binance Account</a>
-        <a href="#">Need help?</a>
     </div>
 </div>
 
