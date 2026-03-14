@@ -42,10 +42,12 @@ def place_order():
         api_key = os.getenv("BINANCE_API_KEY")
         api_secret = os.getenv("BINANCE_API_SECRET")
 
-        if not api_key or not api_secret:
-            return jsonify({"error": "Binance API Key or Secret not found in .env file"}), 500
-        
-        if api_key == "your_testnet_api_key_here" or api_secret == "your_testnet_api_secret_here":
+        # Use mock mode if keys are missing or are placeholders
+        is_mock = not api_key or not api_secret or \
+                  api_key == "your_testnet_api_key_here" or \
+                  api_secret == "your_testnet_api_secret_here"
+
+        if is_mock:
             # Return a MOCK success for demonstration purposes
             return jsonify({
                 "success": True,

@@ -257,11 +257,44 @@
             font-size: 16px;
             width: 100%;
             outline: none;
+            -moz-appearance: textfield; /* Hide step buttons in Firefox */
         }
 
-        .input-wrapper select option {
-            background-color: #1e2329;
+        .input-wrapper input::-webkit-outer-spin-button,
+        .input-wrapper input::-webkit-inner-spin-button {
+            -webkit-appearance: none; /* Hide step buttons in Chrome/Safari */
+            margin: 0;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            gap: 12px;
+        }
+
+        .step-btn {
+            background-color: #2b3139;
+            border: 1px solid var(--border);
             color: var(--text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .step-btn:hover {
+            background-color: var(--hover-bg);
+            border-color: var(--primary);
+        }
+
+        .step-btn:active {
+            transform: scale(0.95);
         }
 
         .btn-submit {
@@ -466,8 +499,16 @@
 
             <div class="form-group">
                 <label>Quantity</label>
-                <div class="input-wrapper">
-                    <input type="number" id="quantity" step="0.001" placeholder="0.001">
+                <div class="quantity-controls">
+                    <div class="step-btn" onclick="adjustQuantity(-0.001)">
+                        <i class="fa-solid fa-minus"></i>
+                    </div>
+                    <div class="input-wrapper" style="flex: 1;">
+                        <input type="number" id="quantity" step="0.001" value="0.001" placeholder="0.001">
+                    </div>
+                    <div class="step-btn" onclick="adjustQuantity(0.001)">
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
                 </div>
             </div>
 
@@ -584,6 +625,13 @@
         function togglePrice() {
             const type = document.getElementById('type').value;
             document.getElementById('price-group').style.display = type === 'LIMIT' ? 'block' : 'none';
+        }
+
+        function adjustQuantity(step) {
+            const input = document.getElementById('quantity');
+            let val = parseFloat(input.value) || 0;
+            val = Math.max(0.001, parseFloat((val + step).toFixed(3)));
+            input.value = val;
         }
 
         function selectCoin(symbol, name, shortName, element) {
