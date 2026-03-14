@@ -42,6 +42,7 @@
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
+            transition: all 0.3s ease;
         }
 
         .sidebar-header {
@@ -160,10 +161,9 @@
         .main-content {
             flex: 1;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
+            flex-direction: column;
             background: linear-gradient(135deg, #0b0e11 0%, #1e2329 100%);
+            position: relative;
         }
 
         .trade-card {
@@ -305,18 +305,107 @@
 
         .fa-bitcoin { color: #f7931a; }
         .fa-ethereum { color: #627eea; }
+
+        /* Mobile Tab Navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: var(--sidebar-bg);
+            border-top: 1px solid var(--border);
+            z-index: 1000;
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 300px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                flex-direction: row;
+            }
+            .sidebar:first-child {
+                display: none; /* Hide watchlist sidebar on medium screens, move to tab/expandable */
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                overflow: hidden;
+            }
+
+            .sidebar {
+                width: 100% !important;
+                height: calc(100vh - 60px);
+                position: absolute;
+                top: 0;
+                left: 0;
+                display: none;
+                z-index: 10;
+                border-right: none;
+                border-left: none;
+            }
+
+            .sidebar.active {
+                display: flex;
+            }
+
+            .main-content {
+                width: 100%;
+                height: calc(100vh - 60px);
+                display: none;
+            }
+
+            .main-content.active {
+                display: flex;
+            }
+
+            .mobile-nav {
+                display: grid;
+            }
+
+            .tradingview-widget-container {
+                height: 100% !important;
+            }
+        }
     </style>
 </head>
 <body>
 
     <!-- Sidebar / Watchlist -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar-watchlist">
         <div class="sidebar-header">
             <div class="search-container">
                 <i class="fa-solid fa-search"></i>
                 <input type="text" placeholder="Search and add stocks">
             </div>
-
         </div>
 
         <div class="watchlist-container" id="watchlist">
@@ -325,7 +414,7 @@
     </div>
 
     <!-- Main Content: Graph -->
-    <div class="main-content" style="padding: 0; display: block;">
+    <div class="main-content active" id="main-chart">
         <div id="tv-widget-container" style="height: 100%; width: 100%;">
             <div class="tradingview-widget-container" style="height: 100%; width: 100%;">
               <div id="tradingview_chart" style="height: 100%; width: 100%;"></div>
@@ -351,13 +440,13 @@
     </div>
 
     <!-- Right Sidebar: Order Entry -->
-    <div class="sidebar" style="width: 380px; border-left: 1px solid var(--border); border-right: none;">
+    <div class="sidebar" id="sidebar-trade" style="width: 380px; border-left: 1px solid var(--border); border-right: none;">
         <div class="sidebar-header" style="text-align: center;">
             <h2 id="trade-title" style="color: var(--primary); font-size: 20px;">BTCUSDT</h2>
             <p id="trade-subtitle" style="font-size: 12px; color: var(--text-secondary);">Binance Futures</p>
         </div>
 
-        <div style="padding: 24px;">
+        <div style="padding: 24px; flex: 1; overflow-y: auto;">
             <div class="form-group">
                 <label>Order Type</label>
                 <div class="input-wrapper">
@@ -392,6 +481,22 @@
         </div>
     </div>
 
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+        <div class="nav-item" onclick="switchTab('watchlist')">
+            <i class="fa-solid fa-list"></i>
+            <span>Watchlist</span>
+        </div>
+        <div class="nav-item active" onclick="switchTab('chart')">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Chart</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('trade')">
+            <i class="fa-solid fa-right-left"></i>
+            <span>Trade</span>
+        </div>
+    </nav>
+
     <script>
         let currentSymbol = 'BTCUSDT';
         let tvWidget = null;
@@ -408,6 +513,24 @@
             renderWatchlist();
             initTVWidget('BINANCE:BTCUSDT.P');
         });
+
+        function switchTab(tab) {
+            // Remove active classes
+            document.querySelectorAll('.sidebar, .main-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            // Set current active
+            if (tab === 'watchlist') {
+                document.getElementById('sidebar-watchlist').classList.add('active');
+                document.querySelectorAll('.nav-item')[0].classList.add('active');
+            } else if (tab === 'chart') {
+                document.getElementById('main-chart').classList.add('active');
+                document.querySelectorAll('.nav-item')[1].classList.add('active');
+            } else if (tab === 'trade') {
+                document.getElementById('sidebar-trade').classList.add('active');
+                document.querySelectorAll('.nav-item')[2].classList.add('active');
+            }
+        }
 
         function renderWatchlist() {
             const container = document.getElementById('watchlist');
@@ -479,6 +602,11 @@
 
             // Clear previous response
             document.getElementById('response').style.display = 'none';
+
+            // Auto-switch to chart on mobile after selection
+            if (window.innerWidth <= 768) {
+                switchTab('chart');
+            }
         }
 
         async function placeOrder(side) {
